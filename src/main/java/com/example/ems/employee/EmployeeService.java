@@ -1,50 +1,78 @@
 package com.example.ems.employee;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.springframework.stereotype.Service;
+
+import com.example.ems.department.Department;
+import com.example.ems.department.DepartmentRepository;
 
 @Service
 public class EmployeeService {
 
-    // In-memory list to store employees (for demonstration purposes)
-    private final List<Employee> employees = new ArrayList<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
-
+    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final EmployeeCodeGenerator codeGenerator;
 
-    public EmployeeService(EmployeeCodeGenerator generator) {
-        this.codeGenerator = generator;
-
-        // Mock data
-        employees.add(new Employee(idCounter.getAndIncrement(), codeGenerator.generate(), "Trang", "trang@example.com",
-                "HR"));
-        employees.add(new Employee(idCounter.getAndIncrement(), codeGenerator.generate(), "Phong", "phong@example.com",
-                "IT"));
-        employees.add(
-                new Employee(idCounter.getAndIncrement(), codeGenerator.generate(), "Hoa", "hoa@example.com", "QA"));
+    public EmployeeService(
+            EmployeeRepository employeeRepository,
+            DepartmentRepository departmentRepository,
+            EmployeeCodeGenerator codeGenerator) {
+        this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
+        this.codeGenerator = codeGenerator;
     }
 
     public List<Employee> findAll() {
-        return employees;
+        return employeeRepository.findAll();
     }
 
     public Optional<Employee> findById(Long id) {
-        return employees.stream().filter(e -> e.getId().equals(id)).findFirst();
+        return employeeRepository.findById(id);
     }
 
-    public Employee create(Employee employee) {
-        employee.setId(idCounter.getAndIncrement());
-        employee.setEmployeeCode(codeGenerator.generate());
-        employee.setName(codeGenerator.formatName(employee.getName()));
-        employees.add(employee);
-        return employee;
+    public List<Employee> findByName(String name) {
+        return employeeRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<Employee> findByDepartmentName(String departmentName) {
+        return employeeRepository.findByDepartmentName(departmentName);
     }
 
     public boolean deleteById(Long id) {
-        return employees.removeIf(e -> e.getId().equals(id));
+        if (employeeRepository.existsById(id)) {
+            employeeRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
+
+    public Employee create(CreateEmployeeRequest request) {
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid department ID"));
+        String employeeCode = codeGenerator.generate();
+
+        Employee employee = new Employee(null, employeeCode, codeGenerator.formatName(request.getName()),
+                request.getEmail(), department);
+        return employeeRepository.save(employee);
+    }
+
+    public Employee update(Long id, UpdateEmployeeRequest request) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+
+        if (request.getName() != null) {
+            employee.setName(codeGenerator.formatName(request.getName()));
+        }
+        if (request.getEmail() != null) {
+            employee.setEmail(request.getEmail());
+        }
+        if (request.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid department ID"));
+            employee.setDepartment(department);
+        }
+        return employeeRepository.save(employee);
+    }
+
 }

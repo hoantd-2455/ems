@@ -14,7 +14,7 @@ public class EmployeeCodeGenerator {
                 .substring(0, 7)
                 .replace("-", ""); // Get current year and month in format YYYYMM
         int sequence = counter.incrementAndGet(); // Increment the sequence number
-        return String.format("EMP-%s-%03d", yearMonth, sequence); // Return employee code in format EMP-YYYYMM-XXX
+        return String.format("EMP-%s-%03d", yearMonth, sequence); // Return employee code in format EMP-YYYYMM-SSS
     }
 
     public String formatName(String name) {
