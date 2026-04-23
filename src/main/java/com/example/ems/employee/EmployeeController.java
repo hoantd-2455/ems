@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,26 +35,42 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Employee>> searchByName(@RequestParam String name) {
-        List<Employee> results = employeeService.findAll().stream()
-                .filter(e -> e.getName().toLowerCase().contains(name.toLowerCase()))
-                .toList();
-        return ResponseEntity.ok(results);
+    public ResponseEntity<List<Employee>> searchByName(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String department) {
+        if (name != null) {
+            return ResponseEntity.ok(employeeService.findByName(name));
+        }
+        if (department != null) {
+            return ResponseEntity.ok(employeeService.findByDepartmentName(department));
+        }
+        return ResponseEntity.ok(employeeService.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<Employee> create(@RequestBody Employee employee) {
-        Employee created = employeeService.create(employee);
-        return ResponseEntity.status(201).body(created);
+    public ResponseEntity<Employee> create(@RequestBody CreateEmployeeRequest request) {
+        try {
+            Employee created = employeeService.create(request);
+            return ResponseEntity.ok(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Employee> update(@PathVariable Long id,
+                                          @RequestBody UpdateEmployeeRequest request) {
+        Employee updated = employeeService.update(id, request);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean deleted = employeeService.deleteById(id);
-        if (deleted) {
+        if (employeeService.deleteById(id)) {
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
+
     }
 }
