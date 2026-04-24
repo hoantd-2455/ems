@@ -15,3 +15,23 @@ logging:
     com.example.ems: DEBUG # package của ta: DEBUG (xem log debug của mình)
     org.springframework.web: INFO
     org.hibernate.SQL: INFO # SQL query — sẽ override theo profile
+
+# Cấu hình Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        # Mở các endpoint: health, info, metrics, caches
+        # Dùng "*" để mở tất cả (chỉ dùng trong dev)
+        include: health, info, metrics, caches
+  endpoint:
+    health:
+      # Hiển thị chi tiết: DB status, disk space...
+      show-details: always
+
+# Thông tin app hiển thị ở /actuator/info
+info:
+  app:
+    name: Employee Management System
+    version: 1.0.0
+    description: Mini project learning Spring Boot
