@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+    <!--
+      th:href="@{/css/style.css}" — Thymeleaf tạo URL đúng cho file CSS.
+      @{} luôn được dùng cho URL thay vì hardcode để tránh lỗi khi deploy.
+    -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <!--
+  th:replace="~{fragments/header :: navbar}"
+  Nghĩa là: lấy fragment tên "navbar" từ file "fragments/header",
+  và thay thế element <div> này bằng nội dung fragment đó.
+-->
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container">
+        <h1>Employee List</h1>
+
+        <!--
+      Hiển thị thông báo thành công nếu có (sau khi redirect từ POST /add).
+      th:if="${successMessage}" — chỉ hiện nếu biến successMessage tồn tại trong Model.
+      th:text="${successMessage}" — hiển thị nội dung của biến đó.
+    -->
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+        <!-- Form tìm kiếm — gửi GET request lên chính trang này với query param -->
+        <form class="search-form" method="get" th:action="@{/employees/list}">
+            <div class="form-group">
+                <label>Search by name</label>
+                <!--
+              th:value="${nameQuery}" — điền lại giá trị đã tìm trước đó vào ô input,
+              để sau khi tìm kiếm user thấy lại từ khóa họ đã nhập.
+            -->
+                <input type="text" name="name" th:value="${nameQuery}" placeholder="Enter name...">
+            </div>
+            <div class="form-group">
+                <label>Search by department</label>
+                <input type="text" name="department" th:value="${deptQuery}" placeholder="Enter department...">
+            </div>
+            <div>
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Bảng danh sách nhân viên -->
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--
+              th:each="emp : ${employees}" — vòng lặp.
+              Với mỗi phần tử trong list "employees", tạo một <tr>.
+              Biến "emp" đại diện cho Employee object hiện tại.
+            -->
+                <tr th:each="emp : ${employees}">
+                    <td th:text="${emp.id}"></td>
+                    <td th:text="${emp.name}"></td>
+                    <td th:text="${emp.email}"></td>
+                    <!--
+                  emp.department có thể null nếu employee chưa có phòng ban.
+                  Dùng toán tử ? để kiểm tra null an toàn.
+                -->
+                    <td th:text="${emp.department != null ? emp.department.name : '-'}"></td>
+                </tr>
+                <!--
+              Hiển thị dòng "No employees found" nếu list rỗng.
+              #lists.isEmpty() là Thymeleaf utility method.
+            -->
+                <tr th:if="${#lists.isEmpty(employees)}">
+                    <td colspan="4" style="text-align:center; color:#999; padding:20px;">
+                        No employees found
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
