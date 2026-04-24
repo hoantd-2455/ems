@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ems_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ems_user
+    password: ems1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # tự tạo/cập nhật bảng khi start — tiện cho dev
+    show-sql: true # in SQL ra console
+    properties:
+      hibernate:
+        format_sql: true # SQL được format đẹp, dễ đọc
+        dialect: org.hibernate.dialect.MySQLDialect
+
+logging:
+  level:
+    com.example.ems: DEBUG # xem tất cả debug log của project
+    org.hibernate.SQL: DEBUG # xem SQL queries
+    org.hibernate.orm.jdbc.bind: TRACE # xem giá trị tham số trong SQL

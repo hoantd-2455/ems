@@ -2,6 +2,9 @@ package com.example.ems.employee;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.example.ems.department.Department;
@@ -10,6 +13,8 @@ import com.example.ems.exception.ResourceNotFoundException;
 
 @Service
 public class EmployeeService {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
@@ -40,20 +45,32 @@ public class EmployeeService {
     public boolean deleteById(Long id) {
         if (employeeRepository.existsById(id)) {
             employeeRepository.deleteById(id);
+
+            log.warn("Employee deleted: id={}", id);
             return true;
         }
+
+        log.warn("Attempted to delete non-existent employee: id={}", id);
         return false;
     }
 
     public Employee create(CreateEmployeeRequest request) {
+        // concat string in log message to avoid unnecessary string concatenation when
+        // debug logging is disabled
+        log.debug("Creating employee with email: {}", request.getEmail());
         Department department = departmentRepository.findById(request.getDepartmentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Department not found with ID: " + request.getDepartmentId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Department not found with ID: " + request.getDepartmentId()));
 
         Employee employee = new Employee(null, request.getName(), request.getEmail(), department);
-        return employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+        log.info("Employee created with ID: {} , Name: {}, Email: {}, Department: {}", savedEmployee.getId(),
+                savedEmployee.getName(), savedEmployee.getEmail(), savedEmployee.getDepartment().getName());
+        return savedEmployee;
     }
 
     public Employee update(Long id, UpdateEmployeeRequest request) {
+        log.debug("Updating employee id={}", id);
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + id));
 
@@ -65,10 +82,14 @@ public class EmployeeService {
         }
         if (request.getDepartmentId() != null) {
             Department department = departmentRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Department not found with ID: " + request.getDepartmentId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Department not found with ID: " + request.getDepartmentId()));
             employee.setDepartment(department);
         }
-        return employeeRepository.save(employee);
+        Employee updatedEmployee = employeeRepository.save(employee);
+        log.info("Employee updated with ID: {} , Name: {}, Email: {}, Department: {}", updatedEmployee.getId(),
+                updatedEmployee.getName(), updatedEmployee.getEmail(), updatedEmployee.getDepartment().getName());
+        return updatedEmployee;
     }
 
 }
