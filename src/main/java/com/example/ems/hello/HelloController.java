@@ -5,16 +5,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ems.common.AppConfig;
-import com.example.ems.employee.EmployeeCodeGenerator;
 
 @RestController
 public class HelloController {
 
-    private final EmployeeCodeGenerator codeGenerator;
     private final AppConfig.SimplePasswordEncoder passwordEncoder;
 
-    public HelloController(EmployeeCodeGenerator codeGenerator, AppConfig.SimplePasswordEncoder passwordEncoder) {
-        this.codeGenerator = codeGenerator;
+    public HelloController(AppConfig.SimplePasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -23,17 +20,8 @@ public class HelloController {
         return "Hello World";
     }
 
-    @GetMapping("/demo/code")
-    public String generateEmployeeCode() {
-        String code = codeGenerator.generate();
-        return "Generated Employee Code: " + code;
-    }
-
-    @GetMapping("/demo/employee")
-    public String demoEmployee(@RequestParam String name, @RequestParam String password) {
-        String code = codeGenerator.generate();
-        String formattedName = codeGenerator.formatName(name);
-        String encodedPassword = passwordEncoder.encode(password);
-        return String.format("Code: %s | Name: %s | Password hash: %s", code, formattedName, encodedPassword);
+    @GetMapping("/demo/encode")
+    public String demoEncode(@RequestParam String password) {
+        return "Password hash: " + passwordEncoder.encode(password);
     }
 }
