@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.ems.exception.ResourceNotFoundException;
+
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("api/employees")
 public class EmployeeController {
@@ -31,7 +35,7 @@ public class EmployeeController {
     public ResponseEntity<Employee> getById(@PathVariable Long id) {
         return employeeService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
     }
 
     @GetMapping("/search")
@@ -48,18 +52,14 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> create(@RequestBody CreateEmployeeRequest request) {
-        try {
-            Employee created = employeeService.create(request);
-            return ResponseEntity.ok(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Employee> create(@Valid @RequestBody CreateEmployeeRequest request) {
+        Employee created = employeeService.create(request);
+        return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Employee> update(@PathVariable Long id,
-                                          @RequestBody UpdateEmployeeRequest request) {
+            @Valid @RequestBody UpdateEmployeeRequest request) {
         Employee updated = employeeService.update(id, request);
         return ResponseEntity.ok(updated);
     }
@@ -71,6 +71,5 @@ public class EmployeeController {
         } else {
             return ResponseEntity.notFound().build();
         }
-
     }
 }
