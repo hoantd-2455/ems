@@ -2,6 +2,8 @@ package com.example.ems.employee;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,8 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/employees")
 public class EmployeeWebController {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeWebController.class);
 
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
@@ -49,6 +53,7 @@ public class EmployeeWebController {
         model.addAttribute("nameQuery", name); // to pre-fill the search box with the current query
         model.addAttribute("deptQuery", department);
 
+        log.debug("Listing employees with name: {} and department: {}", name, department);
         return "employees/list"; // Thymeleaf template at src/main/resources/templates/employees/list.html
     }
 
@@ -71,6 +76,8 @@ public class EmployeeWebController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        log.debug("Adding employee: {}", request.getName());
+
         // if there are validation errors, return to the form with error messages,
         // showing the form again with the list of departments
         if (result.hasErrors()) {
@@ -88,6 +95,8 @@ public class EmployeeWebController {
 
         // after successful creation, redirect to the employee list page with a success
         // message
+        log.info("Employee {} added successfully", request.getName());
+
         return "redirect:/employees/list";
     }
 

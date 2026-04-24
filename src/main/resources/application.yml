@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ems
+  # Khai báo profile đang active — đổi thành "prod" khi deploy
+  profiles:
+    active: dev
+
+# Cấu hình logging toàn app
+logging:
+  pattern:
+    # Format: thời gian | level | tên thread | tên class (ngắn gọn) | message
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} - %msg%n"
+  level:
+    root: INFO # mặc định toàn app: INFO
+    com.example.ems: DEBUG # package của ta: DEBUG (xem log debug của mình)
+    org.springframework.web: INFO
+    org.hibernate.SQL: INFO # SQL query — sẽ override theo profile
