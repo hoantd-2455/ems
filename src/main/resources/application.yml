@@ -35,3 +35,12 @@ info:
     name: Employee Management System
     version: 1.0.0
     description: Mini project learning Spring Boot
+
+app:
+  jwt:
+    # Đọc từ biến môi trường JWT_SECRET
+    # Nếu không có biến môi trường, dùng giá trị mặc định (chỉ cho dev local)
+    # Production: đặt biến môi trường thật, KHÔNG để giá trị mặc định
+    secret: "${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1mb3ItZW1zLWFwcC0yMDI2}"
+    # 86400000ms = 24 giờ
+    expiration: 86400000
