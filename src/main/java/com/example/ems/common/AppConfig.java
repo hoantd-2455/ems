@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public SimplePasswordEncoder passwordEncoder() {
+    public SimplePasswordEncoder simplePasswordEncoder() {
         return new SimplePasswordEncoder();
     }
 
