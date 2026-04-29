@@ -26,6 +26,10 @@ import lombok.Setter;
 @Table(name = "users")
 public class User implements UserDetails {
 
+    // Dùng khi Java serialize object (UserDetails extends Serializable)
+    // Khai báo tường minh để tránh lỗi nếu cấu trúc class thay đổi sau này
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
