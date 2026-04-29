@@ -1,21 +1,22 @@
 package com.example.ems.employee;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.example.ems.department.DepartmentStatsDto;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class EmployeeStatsService {
 
-    private static final Logger log = LoggerFactory.getLogger(EmployeeStatsService.class);
-
     private final EmployeeRepository employeeRepository;
-
-    public EmployeeStatsService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
 
     @Cacheable("employeeCount")
     public long countAll() {
@@ -24,7 +25,13 @@ public class EmployeeStatsService {
         return count;
     }
 
-    @CacheEvict(value = "employeeCount", allEntries = true)
+    @Cacheable("departmentStats")
+    public List<DepartmentStatsDto> countByDepartment() {
+        log.debug("Loading department from db...");
+        return employeeRepository.countEmployeesByDepartment();
+    }
+
+    @CacheEvict(value = { "employeeCount", "departmentStats" }, allEntries = true)
     public void evictEmployeeCountCache() {
         log.debug("Employee count cache evicted");
     }

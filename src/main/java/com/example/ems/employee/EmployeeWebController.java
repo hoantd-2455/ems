@@ -2,8 +2,6 @@ package com.example.ems.employee;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,20 +15,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.ems.department.DepartmentService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/employees")
 public class EmployeeWebController {
 
-    private static final Logger log = LoggerFactory.getLogger(EmployeeWebController.class);
-
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
-
-    public EmployeeWebController(EmployeeService employeeService, DepartmentService departmentService) {
-        this.employeeService = employeeService;
-        this.departmentService = departmentService;
-    }
+    private final EmployeeStatsService statsService;
 
     @GetMapping("/list")
     public String list(
@@ -100,4 +96,11 @@ public class EmployeeWebController {
         return "redirect:/employees/list";
     }
 
+    @GetMapping("/statistics")
+    public String statistics(Model model) {
+        model.addAttribute("totalEmployees", statsService.countAll());
+        model.addAttribute("deptStats", statsService.countByDepartment());
+        log.debug("Loading statistics page");
+        return "employees/statistics";
+    }
 }

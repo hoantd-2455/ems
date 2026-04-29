@@ -150,3 +150,23 @@ button:hover {
     border-radius: 4px;
     margin-bottom: 16px;
 }
+
+/* Statistics page */
+.stats-summary {
+    background: #f0f4f8;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    display: inline-block;
+}
+
+.stats-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2c5282;
+    margin: 0;
+}
+
+.mt-2 {
+    margin-top: 16px;
+}
