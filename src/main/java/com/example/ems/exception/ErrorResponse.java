@@ -3,6 +3,9 @@ package com.example.ems.exception;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResponse {
 
     private int status;
@@ -19,21 +22,5 @@ public class ErrorResponse {
     public ErrorResponse(int status, String message, List<String> errors) {
         this(status, message);
         this.errors = errors;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public List<String> getErrors() {
-        return errors;
     }
 }

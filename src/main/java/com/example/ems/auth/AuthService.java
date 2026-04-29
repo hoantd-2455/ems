@@ -3,17 +3,16 @@ package com.example.ems.auth;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-    }
 
     public AuthResponse register(RegisterRequest request) {
         // check if username already exists
@@ -26,6 +25,8 @@ public class AuthService {
                 passwordEncoder.encode(request.getPassword()), // hash password
                 request.getRole() != null ? request.getRole() : Role.USER);
         userRepository.save(user);
+        log.info("User {} registered successfully", user.getUsername());
+
         String token = jwtService.generateToken(user);
         return new AuthResponse(token, user.getUsername(), user.getRole().name());
     }
@@ -42,6 +43,7 @@ public class AuthService {
 
         // generate JWT token for authenticated user
         String token = jwtService.generateToken(user);
+        log.info("User {} logged in successfully", user.getUsername());
         return new AuthResponse(token, user.getUsername(), user.getRole().name());
     }
 }
