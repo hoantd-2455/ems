@@ -11,7 +11,8 @@
 ### Module 1: Getting Started with Spring Boot
 
 Nội dung
-- Giới thiệu Spring Boot, Starter, Auto Configuration● Tạo project với Spring Initializr
+- Giới thiệu Spring Boot, Starter, Auto Configuration
+- Tạo project với Spring Initializr
 - Cấu trúc project + chạy Hello World REST API
 
 Thực hành (Mini Project – Lab 1)

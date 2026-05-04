@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Add Employee</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+  <div th:replace="~{fragments/header :: navbar}"></div>
+
+  <div class="container">
+    <h1>Add New Employee</h1>
+
+    <!--
+      th:action="@{/employees/add}" — URL nhận dữ liệu form (POST request)
+      method="post" — HTTP method
+      th:object="${request}" — bind form này với object "request" trong Model.
+        Sau khi bind, các input trong form dùng *{field} thay vì ${request.field}
+    -->
+    <form method="post" th:action="@{/employees/add}" th:object="${request}">
+
+      <div class="form-group">
+        <label>Name</label>
+        <!--
+              th:field="*{name}" — Thymeleaf tự tạo:
+                id="name", name="name", và value="${request.name}"
+              Khi form submit lỗi và hiện lại, input sẽ có sẵn giá trị user đã nhập.
+            -->
+        <input type="text" th:field="*{name}" placeholder="Enter full name">
+        <!--
+              #fields.hasErrors('name') — kiểm tra field "name" có lỗi validation không.
+              th:errors="*{name}" — hiển thị message lỗi của field đó.
+            -->
+        <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="text" th:field="*{email}" placeholder="Enter email">
+        <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+      </div>
+
+      <div class="form-group">
+        <label>Department</label>
+        <!--
+              th:field="*{departmentId}" — bind với field departmentId trong CreateEmployeeRequest.
+              th:each trên <option> tạo một option cho mỗi department từ list "departments".
+              th:value="${dept.id}" — giá trị submit lên server khi chọn.
+              th:text="${dept.name}" — text hiển thị trong dropdown.
+            -->
+        <select th:field="*{departmentId}">
+          <option value="">-- Select department --</option>
+          <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}">
+          </option>
+        </select>
+        <span class="error" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}"></span>
+      </div>
+
+      <button type="submit">Add Employee</button>
+
+    </form>
+  </div>
+
+</body>
+
+</html>

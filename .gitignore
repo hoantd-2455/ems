@@ -37,9 +37,5 @@ build/
 **/.DS_Store
 
 ### Sensitive config — KHÔNG push thông tin DB/secret lên Git ###
-application-prod.properties
-application-prod.yml
-application-local.properties
-application-local.yml
 *.env
 .env

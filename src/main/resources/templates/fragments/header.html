@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+  <!--
+  th:fragment="navbar" — đặt tên cho đoạn HTML này.
+  Các trang khác sẽ nhúng vào bằng tên "navbar".
+-->
+  <nav th:fragment="navbar">
+    <a th:href="@{/employees/list}">Employee List</a>
+    <a th:href="@{/employees/add}">Add Employee</a>
+    <a th:href="@{/employees/statistics}">Statistics</a>
+  </nav>
+
+</body>
+
+</html>

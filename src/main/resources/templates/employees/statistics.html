@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Statistics</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container">
+        <h1>Employee Statistics</h1>
+
+        <!-- Tổng số nhân viên -->
+        <div class="stats-summary">
+            <h2>Total Employees</h2>
+            <!--
+              th:text="${totalEmployees}" — hiển thị số lấy từ Model.
+              Dấu | | trong Thymeleaf là "literal substitution" — ghép chuỗi gọn hơn concat.
+            -->
+            <p class="stats-number" th:text="${totalEmployees}">0</p>
+        </div>
+
+        <!-- Bảng thống kê theo phòng ban -->
+        <h2>Employees by Department</h2>
+
+        <!--
+          th:if="${not #lists.isEmpty(deptStats)}" — chỉ hiện bảng nếu có dữ liệu.
+          #lists là Thymeleaf utility object để thao tác với List.
+        -->
+        <div th:if="${not #lists.isEmpty(deptStats)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Department</th>
+                        <th>Number of Employees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--
+                      th:each="stat, iterStat : ${deptStats}"
+                      stat = phần tử hiện tại (DepartmentStatsDto)
+                      iterStat = trạng thái iteration (index, count, first, last...)
+                      iterStat.count = số thứ tự bắt đầu từ 1
+                    -->
+                    <tr th:each="stat, iterStat : ${deptStats}">
+                        <td th:text="${iterStat.count}">1</td>
+
+                        <!--
+                          stat.departmentName() — vì DepartmentStatsDto là Java record,
+                          getter không có prefix "get": departmentName() thay vì getDepartmentName()
+                          Thymeleaf tự nhận ra record accessor method.
+                        -->
+                        <td th:text="${stat.departmentName()}">Department</td>
+                        <td th:text="${stat.employeeCount()}">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${#lists.isEmpty(deptStats)}">
+            <p>No department data available.</p>
+        </div>
+
+        <div class="mt-2">
+            <a th:href="@{/employees/list}">← Back to Employee List</a>
+        </div>
+    </div>
+
+</body>
+
+</html>
